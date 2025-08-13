@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>D.I.S.C. 個人行為模式線上測驗</title>
+<style>
+  /* Reset & 基本設定 */
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    font-family: "Noto Sans TC", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    background: #f5f6f8;
+    color: #2c3e50;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+  }
+  main {
+    max-width: 720px;
+    width: 100%;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 35px 45px 40px 45px;
+    box-shadow: 0 8px 24px rgba(44, 62, 80, 0.12);
+  }
+  h1 {
+    text-align: center;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: #34495e;
+    font-size: 2rem;
+    letter-spacing: 0.05em;
+  }
+  #instructions {
+    background: #ecf0f1;
+    border: 1px solid #bdc3c7;
+    border-radius: 10px;
+    padding: 18px 25px;
+    margin-bottom: 30px;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #34495e;
+  }
+  #instructions ol {
+    padding-left: 20px;
+    margin: 8px 0 0 0;
+  }
+  #instructions li {
+    margin-bottom: 8px;
+  }
+  .question {
+    margin-bottom: 26px;
+    padding: 18px 24px;
+    background: #f9fafb;
+    border-radius: 10px;
+    border: 1px solid #d0d7de;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+  }
+  .question p {
+    margin: 0 0 15px 0;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #2c3e50;
+  }
+  .options label {
+    display: block;
+    padding: 11px 16px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    font-size: 1rem;
+    color: #34495e;
+    user-select: none;
+    transition: background-color 0.25s, border-color 0.25s;
+  }
+  .options label:hover {
+    background-color: #e1e8f0;
+    border-color: #2980b9;
+  }
+  input[type="radio"] {
+    margin-right: 14px;
+    accent-color: #2980b9;
+    cursor: pointer;
+    transform: scale(1.15);
+    vertical-align: middle;
+  }
+  .btn-group {
+    text-align: center;
+    margin-top: 25px;
+    margin-bottom: 36px;
+  }
+  button {
+    background-color: #2980b9;
+    color: white;
+    border: none;
+    font-weight: 600;
+    font-size: 1.1rem;
+    padding: 14px 32px;
+    margin: 0 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(41, 128, 185, 0.4);
+    transition: background-color 0.3s, box-shadow 0.3s;
+    min-width: 130px;
+  }
+  button:hover {
+    background-color: #1f6391;
+    box-shadow: 0 6px 20px rgba(31, 99, 145, 0.6);
+  }
+  #result {
+    background: #dce6f1;
+    border: 1px solid #a4b9d2;
+    padding: 24px 35px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1.2rem;
+    white-space: pre-line;
+    color: #1c2833;
+    box-shadow: inset 0 0 12px #b0c4de;
+    min-height: 80px;
+    text-align: center;
+  }
+  /* 響應式 */
+  @media (max-width: 520px) {
+    main {
+      padding: 30px 25px 35px 25px;
+    }
+    h1 {
+      font-size: 1.6rem;
+      margin-bottom: 10px;
+    }
+    #instructions {
+      font-size: 0.95rem;
+      padding: 15px 20px;
+      margin-bottom: 25px;
+    }
+    .question p {
+      font-size: 1rem;
+    }
+    .options label {
+      font-size: 0.95rem;
+      padding: 9px 14px;
+      margin-bottom: 9px;
+    }
+    button {
+      min-width: 110px;
+      padding: 12px 24px;
+      font-size: 1rem;
+      margin: 0 8px;
+    }
+    #result {
+      font-size: 1.05rem;
+      padding: 20px 25px;
+    }
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>D.I.S.C. 個人行為模式線上測驗</h1>
+  <section id="instructions">
+    <strong>測驗說明</strong>
+    <ol>
+ 
+      <li>自選生活或工作情境</li>
+      <li>總共24題的單選</li>
+      <li>選出真實我而非理想我</li>
+      <li>統計甲乙丙丁的個數</li>
+    </ol>
+  </section>
+  <form id="discForm"></form>
+  <div class="btn-group">
+    <button type="button" onclick="calculateScore()">提交</button>
+    <button type="button" onclick="resetForm()">清除</button>
+  </div>
+  <div id="result"></div>
+</main>
+
+<script>
+const questions = [
+  ["眼光獨到的", "有說服力的", "仁慈心腸的", "自我省思的"],
+  ["有領導力的", "好客的", "誠實的", "冷靜的"],
+  ["有膽識的", "活潑的", "忠實的", "守承諾的"],
+  ["意志堅定的", "開朗的", "與人為善的", "客觀的"],
+  ["勇氣的", "幽默的", "性情温和的", "精確的"],
+  ["強悍的", "快樂的", "體貼的", "周詳的"],
+  ["具支配力的", "富想像力的", "順從的", "講原則的"],
+  ["無畏的", "情緒化的", "害羞的", "內斂的"],
+  ["獨立自主的", "善交際的", "寬容的", "自律的"],
+  ["好冒險的", "愛分享的", "遷就的", "淡定的"],
+  ["果斷的", "健談的", "傳統的", "謹慎的"],
+  ["大膽的", "八面玲瓏的", "滿足的", "優雅的"],
+  ["急性子的", "熱情的", "随和的", "憂慮的"],
+  ["不屈不撓的", "富有魅力的", "有愛心的", "深思熟慮的"],
+  ["積極的", "有活力的", "容忍力的", "重邏輯的"],
+  ["效率的", "樂觀的", "具同情心的", "高標準的"],
+  ["胸懷大志的", "陽光燦爛的", "寬宏大量的", "有節制的"],
+  ["受尊敬的", "善推廣的", "本性善良的", "按部就班的"],
+  ["帶頭的", "有夢想的", "為人著想的", "有禮貌的"],
+  ["目標導向的", "正面思考的", "随遇而安的", "善分析的"],
+  ["企圖心強的", "信任別人的", "喜歡傾聽的", "好學的"],
+  ["精力旺盛的", "有人緣的", "不計較的", "有修養的"],
+  ["坦率直言的", "有熱忱的", "猶豫不決的", "完美主義的"],
+  ["自信的", "受歡迎的", "友善的", "有條有理的"]
+];
+const cats = ["甲", "乙", "丙", "丁"];
+
+function buildForm() {
+  const form = document.getElementById('discForm');
+  let formHTML = "";
+  questions.forEach((opts, i) => {
+    formHTML += `<div class="question"><p>${i+1}. 請選出最符合你的形容詞：</p><div class="options">`;
+    opts.forEach((opt, j) => {
+      formHTML += `<label><input type="radio" name="q${i+1}" value="${cats[j]}"> ${opt}</label>`;
+    });
+    formHTML += "</div></div>";
+  });
+  form.innerHTML = formHTML;
+}
+
+function calculateScore() {
+  const form = document.getElementById('discForm');
+  const totalQuestions = questions.length;
+  let scores = {"甲":0, "乙":0, "丙":0, "丁":0};
+  const formData = new FormData(form);
+  if ([...formData.entries()].length < totalQuestions) {
+    alert("請完成所有題目！");
+    return;
+  }
+  for (let [key, value] of formData.entries()) {
+    scores[value]++;
+  }
+  let maxScore = 0;
+  let maxCats = [];
+  for (let cat in scores) {
+    if (scores[cat] > maxScore) {
+      maxScore = scores[cat];
+      maxCats = [cat];
+    } else if (scores[cat] === maxScore) {
+      maxCats.push(cat);
+    }
+  }
+  let resultText = `甲: ${scores["甲"]} 分\n乙: ${scores["乙"]} 分\n丙: ${scores["丙"]} 分\n丁: ${scores["丁"]} 分\n\n`;
+  if (maxCats.length === 1) {
+    resultText += `你的主要行為模式是：${maxCats[0]}`;
+  } else {
+    resultText += `你的主要行為模式是：${maxCats.join("、")}`;
+  }
+  document.getElementById('result').textContent = resultText;
+}
+
+function resetForm() {
+  document.getElementById('discForm').reset();
+  document.getElementById('result').textContent = "";
+}
+
+window.onload = buildForm;
+</script>
+</body>
+</html>
